@@ -1,21 +1,17 @@
 package com.attendsmart.scheduler;
 
-import com.attendsmart.service.EmailService;
-import com.attendsmart.service.SmsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Component
 public class LowAttendanceScheduler {
 
-    @Autowired
-    private SmsService smsService;
-
-    @Autowired
-    private EmailService emailService;
+    private static final Logger logger = LoggerFactory.getLogger(LowAttendanceScheduler.class);
 
     /**
      * Automated cron scheduled job:
@@ -24,7 +20,8 @@ public class LowAttendanceScheduler {
      */
     @Scheduled(cron = "${attendance.alert.cron:0 0 17 * * ?}")
     public void runDailyAttendanceAudit() {
-        System.out.printf("[JAVA CRON SCHEDULER] Daily low attendance audit triggered at %s%n", LocalDateTime.now());
+        logger.info("[JAVA CRON SCHEDULER] Daily low attendance audit triggered at {}",
+                LocalDateTime.now(ZoneId.systemDefault()));
         // In full deployment, queries Firebase Firestore collection "students" where attendanceRate < 75.0
         // Automatically dispatches SMS and Email warnings to students and parents
     }

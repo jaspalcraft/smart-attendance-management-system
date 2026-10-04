@@ -1,6 +1,6 @@
 import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { apiRouter } from './src/server/api.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -8,8 +8,9 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000;
 
+  app.disable('x-powered-by');
   app.use(express.json());
 
   // Mount the Node.js attendance alert API
@@ -38,8 +39,8 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server listening on http://0.0.0.0:${PORT}`);
+    console.log(`Server listening on http://localhost:${PORT}`);
   });
 }
 
-startServer();
+await startServer();
