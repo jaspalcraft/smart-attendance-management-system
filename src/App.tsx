@@ -49,10 +49,12 @@ import { AlertSettingsView } from './components/AlertSettingsView.tsx';
 import { JavaBackendExplorer } from './components/JavaBackendExplorer.tsx';
 import { PreviewAlertModal } from './components/PreviewAlertModal.tsx';
 import { AlertTriangle, Send, CheckCircle2 } from 'lucide-react';
+import { Login } from './components/Login.tsx';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Core Data State
   const [students, setStudents] = useState<Student[]>(INITIAL_STUDENTS);
@@ -81,22 +83,32 @@ export default function App() {
           role: isAdmin ? 'admin' : 'teacher',
         });
       } else {
-        // Fallback default admin profile for immediate live simulation
-        setCurrentUser({
-          uid: 'faculty-root-admin',
-          email: 'yjassi93@gmail.com',
-          displayName: 'Academic Administrator',
-          photoURL: null,
-          role: 'admin',
-        });
+        setCurrentUser(null);
       }
+      setIsAuthLoading(false);
     });
 
-    return () => unsubscribe();
-  }, []);
+    if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+        <div className="text-sm text-slate-400">Checking your session...</div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return <Login onGoogleLogin={handleLogin} />;
+  }
+
+  return () => unsubscribe();
+  }, [currentUser]);
 
   // 2. Initial Database Seeding & Firestore Live Snapshot Listeners
   useEffect(() => {
+    if (!currentUser) {
+      return;
+    }
+
     seedInitialDatabaseIfEmpty();
 
     // Listen to Students
