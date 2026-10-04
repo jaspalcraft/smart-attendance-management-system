@@ -1,0 +1,8 @@
+{
+  "name": " Smart Attendance Management System",
+  "description": "Smart Attendance Management System with automated low attendance alerts, SMS \u0026 email notifications, QR attendance, and Firebase integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

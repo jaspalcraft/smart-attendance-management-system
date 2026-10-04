@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.email == 'yjassi93@gmail.com' && request.auth.token.email_verified == true) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // User profiles (Strictly protected for identity & PII)
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+      allow update: if isSignedIn() && isValidId(userId) && (
+        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])) ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Students Directory
+    match /students/{studentId} {
+      allow read, write: if true;
+    }
+
+    // Classes / Courses
+    match /classes/{classId} {
+      allow read, write: if true;
+    }
+
+    // Attendance Records
+    match /attendance/{attendanceId} {
+      allow read, write: if true;
+    }
+
+    // Notification Logs (Automated & Manual SMS/Email dispatches)
+    match /notifications/{notificationId} {
+      allow read, write: if true;
+    }
+
+    // System Settings (Thresholds, automated triggers)
+    match /settings/{settingId} {
+      allow read, write: if true;
+    }
+
+    // Admin mapping collection
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}

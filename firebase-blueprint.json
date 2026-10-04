@@ -1,0 +1,153 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user including teachers, administrators, and staff",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["admin", "teacher", "student"] },
+        "phone": { "type": "string", "maxLength": 30 },
+        "department": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "displayName", "role"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Student enrolled in courses with tracked attendance and emergency parent contact info",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "rollNumber": { "type": "string", "maxLength": 50 },
+        "email": { "type": "string", "format": "email", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "parentName": { "type": "string", "maxLength": 100 },
+        "parentPhone": { "type": "string", "maxLength": 30 },
+        "parentEmail": { "type": "string", "format": "email", "maxLength": 128 },
+        "course": { "type": "string", "maxLength": 100 },
+        "semester": { "type": "string", "maxLength": 30 },
+        "section": { "type": "string", "maxLength": 30 },
+        "totalClasses": { "type": "number" },
+        "attendedClasses": { "type": "number" },
+        "attendanceRate": { "type": "number" },
+        "status": { "type": "string", "enum": ["good", "warning", "critical"] },
+        "lastAlertSentAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "rollNumber", "email", "course", "totalClasses", "attendedClasses", "attendanceRate"]
+    },
+    "CourseClass": {
+      "title": "CourseClass",
+      "description": "Class or lecture course subject handled by instructors",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "code": { "type": "string", "maxLength": 30 },
+        "instructorName": { "type": "string", "maxLength": 100 },
+        "instructorId": { "type": "string", "maxLength": 128 },
+        "instructorEmail": { "type": "string", "format": "email", "maxLength": 128 },
+        "schedule": { "type": "string", "maxLength": 100 },
+        "room": { "type": "string", "maxLength": 50 },
+        "totalSessions": { "type": "number" },
+        "department": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "code", "instructorName", "department"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Daily or session attendance ledger for a class",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "className": { "type": "string", "maxLength": 100 },
+        "date": { "type": "string", "maxLength": 30 },
+        "sessionType": { "type": "string", "enum": ["lecture", "lab", "tutorial"] },
+        "markedBy": { "type": "string", "maxLength": 128 },
+        "markedByEmail": { "type": "string", "format": "email", "maxLength": 128 },
+        "studentRecords": { "type": "string", "maxLength": 50000 },
+        "summary": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["classId", "className", "date", "markedBy"]
+    },
+    "NotificationLog": {
+      "title": "NotificationLog",
+      "description": "Log of automated or manual SMS/email alert dispatches",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 100 },
+        "recipientType": { "type": "string", "enum": ["student", "parent", "both"] },
+        "channel": { "type": "string", "enum": ["sms", "email", "both"] },
+        "recipientAddress": { "type": "string", "maxLength": 150 },
+        "subject": { "type": "string", "maxLength": 200 },
+        "message": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["delivered", "simulated", "failed", "pending"] },
+        "attendanceRate": { "type": "number" },
+        "triggerReason": { "type": "string", "enum": ["low_attendance_threshold", "daily_absence", "manual_alert", "automated_sweep"] },
+        "sentAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentName", "recipientAddress", "channel", "message", "status", "attendanceRate"]
+    },
+    "AlertSetting": {
+      "title": "AlertSetting",
+      "description": "Global threshold and notification parameters for low attendance warnings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "warningThreshold": { "type": "number" },
+        "criticalThreshold": { "type": "number" },
+        "autoAlertsEnabled": { "type": "boolean" },
+        "notifyParents": { "type": "boolean" },
+        "notifyStudents": { "type": "boolean" },
+        "smsEnabled": { "type": "boolean" },
+        "emailEnabled": { "type": "boolean" },
+        "frequency": { "type": "string", "enum": ["instant", "daily", "weekly"] },
+        "senderEmail": { "type": "string", "maxLength": 128 },
+        "senderPhone": { "type": "string", "maxLength": 30 },
+        "customTemplate": { "type": "string", "maxLength": 500 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["warningThreshold", "criticalThreshold", "autoAlertsEnabled"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles with role-based access"
+    },
+    "/students/{studentId}": {
+      "schema": { "$ref": "#/entities/Student" },
+      "description": "Stores students directory, attendance statistics and parent contacts"
+    },
+    "/classes/{classId}": {
+      "schema": { "$ref": "#/entities/CourseClass" },
+      "description": "Stores academic courses and class sections"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/AttendanceRecord" },
+      "description": "Stores attendance sheets recorded for class sessions"
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/NotificationLog" },
+      "description": "Stores audit log of automated and manual SMS/Email notifications"
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/AlertSetting" },
+      "description": "Stores system-wide low attendance alert configuration"
+    }
+  }
+}
