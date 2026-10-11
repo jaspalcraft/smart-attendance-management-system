@@ -1,8 +1,10 @@
 node_modules/
 build/
 dist/
+.wrangler/
 coverage/
 .DS_Store
 *.log
 .env*
 !.env.example
+backend-java/target/

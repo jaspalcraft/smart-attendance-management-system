@@ -3,16 +3,17 @@
 Production-ready Java backend featuring automated SMS and email low attendance notification engine, Spring `@Scheduled` background worker, and Firebase Cloud Firestore integration.
 
 ## Architecture
-- **Framework**: Spring Boot 3.2.4 (Java 17+)
+- **Framework**: Spring Boot 3.5.16 (Java 25)
 - **Database**: Google Cloud Firestore (via Firebase Admin SDK)
 - **SMS Gateway**: Twilio Java SDK
 - **Email Delivery**: Spring JavaMailSender (SendGrid / SMTP relay)
 - **Scheduler**: Spring `@EnableScheduling` & `@Scheduled` for automated daily/weekly low-attendance sweep
 
 ## Prerequisites
-- Java JDK 17 or higher
-- Apache Maven 3.8+
+- Java JDK 25
+- Apache Maven 3.9+
 - Firebase service account JSON (`firebase-service-account.json`)
+- Set `CORS_ALLOWED_ORIGINS` to the frontend origin when it is served from a different origin (defaults to `http://localhost:3000`).
 
 ## Quickstart Run
 

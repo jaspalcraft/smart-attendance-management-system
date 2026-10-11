@@ -49,10 +49,13 @@ import { AlertSettingsView } from './components/AlertSettingsView.tsx';
 import { JavaBackendExplorer } from './components/JavaBackendExplorer.tsx';
 import { PreviewAlertModal } from './components/PreviewAlertModal.tsx';
 import { AlertTriangle, Send, CheckCircle2 } from 'lucide-react';
+import { Login } from './components/Login.tsx';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   // Core Data State
   const [students, setStudents] = useState<Student[]>(INITIAL_STUDENTS);
@@ -81,22 +84,20 @@ export default function App() {
           role: isAdmin ? 'admin' : 'teacher',
         });
       } else {
-        // Fallback default admin profile for immediate live simulation
-        setCurrentUser({
-          uid: 'faculty-root-admin',
-          email: 'yjassi93@gmail.com',
-          displayName: 'Academic Administrator',
-          photoURL: null,
-          role: 'admin',
-        });
+        setCurrentUser(null);
       }
+      setIsAuthLoading(false);
     });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   // 2. Initial Database Seeding & Firestore Live Snapshot Listeners
   useEffect(() => {
+    if (!currentUser) {
+      return;
+    }
+
     seedInitialDatabaseIfEmpty();
 
     // Listen to Students
@@ -170,17 +171,31 @@ export default function App() {
 
   // Handlers for Auth
   const handleLogin = async () => {
+    setAuthError(null);
+
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Google Sign-in failed:', err);
+
+      const code =
+        err && typeof err === 'object' && 'code' in err
+          ? String((err as { code?: unknown }).code)
+          : '';
+
+      if (code === 'auth/popup-closed-by-user') {
+        setAuthError('Google sign-in was cancelled.');
+      } else if (code === 'auth/popup-blocked') {
+        setAuthError('Your browser blocked the Google sign-in popup.');
+      } else {
+        setAuthError('Unable to sign in with Google. Please try again.');
+      }
     }
   };
 
   const handleLogout = async () => {
     try {
-      await auth.signOut();
-      setCurrentUser(null);
+      await signOut(auth);
     } catch (err) {
       console.error('Logout error:', err);
     }
@@ -303,6 +318,25 @@ export default function App() {
   };
 
   const atRiskCount = students.filter((s) => s.attendanceRate < settings.warningThreshold).length;
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <div className="text-sm text-slate-400">
+          Checking your session...
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <Login
+        onGoogleLogin={handleLogin}
+        error={authError}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">

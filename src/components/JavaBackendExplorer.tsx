@@ -171,20 +171,20 @@ public class LowAttendanceScheduler {
     pom: {
       title: 'pom.xml',
       filename: 'backend-java/pom.xml',
-      desc: 'Maven build file with Spring Boot 3.2, Firebase Admin SDK, Twilio Java, and JavaMail.',
+      desc: 'Maven build file with Spring Boot 3.5, Java 25, Firebase Admin SDK, Twilio Java, and JavaMail.',
       code: `<project xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.5.16</version>
     </parent>
     <groupId>com.attendsmart</groupId>
     <artifactId>attendance-management-backend</artifactId>
     <version>1.0.0</version>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <firebase.admin.version>9.2.0</firebase.admin.version>
         <twilio.version>9.14.0</twilio.version>
     </properties>
@@ -229,7 +229,7 @@ public class LowAttendanceScheduler {
         const data = await res.json();
         setApiResponse({
           status: 'SUCCESS 200 OK',
-          backendArchitecture: 'Java Spring Boot 3.2.4 & Node Bridge',
+          backendArchitecture: 'Java 25, Spring Boot 3.5.16 & Node Bridge',
           smsGateway: 'Twilio Telecom Route (Online)',
           emailGateway: 'JavaMailSender / SendGrid (Online)',
           cronJobScheduler: 'Active (Daily Audit at 17:00)',
@@ -312,7 +312,7 @@ public class LowAttendanceScheduler {
               <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 Backend Architecture
               </span>
-              <span className="text-xs text-slate-300">Java 17 &bull; Spring Boot 3.2 &bull; Firebase Admin</span>
+              <span className="text-xs text-slate-300">Java 25 &bull; Spring Boot 3.5.16 &bull; Firebase Admin</span>
             </div>
             <h2 className="text-2xl font-bold text-white mt-1">Java Spring Boot Backend Engine</h2>
             <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
