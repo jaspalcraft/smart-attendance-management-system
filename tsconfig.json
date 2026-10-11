@@ -23,5 +23,6 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "exclude": ["worker.ts", "worker-configuration.d.ts"]
 }
